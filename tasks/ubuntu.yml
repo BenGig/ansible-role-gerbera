@@ -1,0 +1,14 @@
+---
+- name: Activate Gerbera repository
+  apt_repository:
+    repo: ppa:stephenczetty/gerbera
+    state: present
+
+- name: Install Gerbera UPnP server for Ubuntu
+  apt:
+    name: "{{ item }}"
+  with_items:
+      - python-lxml
+      - gerbera
+  state: present
+  update_cache: true

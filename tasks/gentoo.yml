@@ -1,0 +1,5 @@
+---
+- name: Install Gerbera UPnP server for Gentoo
+  portage:
+    package: gerbera
+    state: present

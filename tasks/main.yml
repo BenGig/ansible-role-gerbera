@@ -1,0 +1,48 @@
+---
+- name: Install Gerbera UPnP server for Debian
+  apt:
+    name: "{{ item }}"
+    state: present
+    cache_valid_time: 3600
+  with_items:
+      - python-lxml
+      - gerbera
+  when: ansible_os_family == 'Debian'
+
+- name: Install Gerbera UPnP server for Gentoo
+  portage:
+    package: gerbera
+    state: present
+  when: ansible_os_family == 'Gentoo'
+
+- name: Activate Gerbera repository for Ubuntu
+  apt_repository:
+    repo: ppa:stephenczetty/gerbera
+    state: present
+  when: ansible_os_family == 'Ubuntu'
+
+- name: Install Gerbera UPnP server for Ubuntu
+  apt:
+    state: present
+    update_cache: true
+    name: "{{ item }}"
+  with_items:
+      - python-lxml
+      - gerbera
+  when: ansible_os_family == 'Ubuntu'
+
+- name: Setup configuration
+  template:
+    src: config.xml
+    dest: /etc/gerbera/config.xml
+
+- name: Install enhanced import script
+  copy:
+    src: files/import_structured.js
+    dest: /usr/share/gerbera/js/import_structured.js
+    
+- name: Ensure gerbera is running
+  service:
+    name: gerbera
+    state: started
+    enabled: yes

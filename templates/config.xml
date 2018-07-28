@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config version="2" xmlns="http://mediatomb.cc/config/2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mediatomb.cc/config/2 http://mediatomb.cc/config/2.xsd">
+  <!--
+     See http://gerbera.io or read the docs for more
+     information on creating and using config.xml configuration files.
+    -->
+  <server>
+    <port>{{ gerbera_port }}</port>
+    <ui enabled="{{ ui_enabled }}" show-tooltips="yes">
+      {% if accounts_enabled %}
+      <accounts enabled="yes" session-timeout="30">
+        <account user="{{ gerbera_user }}" password="{{ gerbera_password | mandatory }}"/>
+      </accounts>
+      {% else %}
+      <accounts enabled="no" session-timeout="30">
+        <account user="unused" password="unused"/>
+      </accounts>
+      {% endif %}
+    </ui>
+    <name>{{ upnp_library_name }}</name>
+    <udn>uuid:{{ uuid }}</udn>
+    <home>{{ gerbera_home }}</home>
+    <webroot>{{ gerbera_webroot }}</webroot>
+    <!--
+        How frequently (in seconds) to send ssdp:alive advertisements.
+        Minimum alive value accepted is: 62
+
+        The advertisement will be sent every (A/2)-30 seconds,
+        and will have a cache-control max-age of A where A is
+        the value configured here. Ex: A value of 62 will result
+        in an SSDP advertisement being sent every second.
+    -->
+    <alive>1800</alive>
+    <storage>
+      {% if mysql_host != "" %}
+      <sqlite3 enabled="no">
+      {% else %}
+      <sqlite3 enabled="yes">
+      {% endif %}
+        <database-file>gerbera.db</database-file>
+      </sqlite3>
+      {% if mysql_host == "" %}
+      <mysql enabled="no">
+      {% else %}
+      <mysql enabled="yes">
+        <host>{{ mysql_host }}</host>
+        <username>{{ mysql_user }}</username>
+        <password>{{ mysql_password | mandatory }}</password>
+        <database>{{ mysql_database }}</database>
+      {% endif %}
+      </mysql>
+    </storage>
+    {% if ps3_support %}
+    <protocolInfo extend="yes"/><!-- For PS3 support change to "yes" -->
+    {% else %}
+    <protocolInfo extend="no"/><!-- For PS3 support change to "yes" -->
+    {% endif %}
+    <!--
+       Uncomment the lines below to get rid of jerky avi playback on the
+       DSM320 or to enable subtitles support on the DSM units
+    -->
+    {% if dsm_support %}
+    <custom-http-headers>
+      <add header="X-User-Agent: redsonic"/>
+    </custom-http-headers>
+    <manufacturerURL>redsonic.com</manufacturerURL>
+    <modelNumber>105</modelNumber>
+    {% endif %}
+    -->
+    <!-- Uncomment the line below if you have a Telegent TG100 -->
+    {% if tg100_support %}
+       <upnp-string-limit>101</upnp-string-limit>
+    {% endif %}
+    -->
+    <extended-runtime-options>
+      {% if ffmpegthumbnailer %}
+      <ffmpegthumbnailer enabled="yes">
+      {% else %}
+      <ffmpegthumbnailer enabled="no">
+      {% endif %}
+        <thumbnail-size>{{ ffmpegthumbnailer_size }}</thumbnail-size>
+        <seek-percentage>{{ ffmpegthumbnailer_seekpercentage }}</seek-percentage>
+        <filmstrip-overlay>{{ ffmpegthumbnailer_filmstripoverlay }}</filmstrip-overlay>
+        <workaround-bugs>{{ ffmpegthumbnailer_workaround }}</workaround-bugs>
+      </ffmpegthumbnailer>
+      <mark-played-items enabled="{{ markplayed }}" suppress-cds-updates="yes">
+        <string mode="prepend">{{ markplayed_prepend }}</string>
+        <mark>
+          <content>video</content>
+        </mark>
+      </mark-played-items>
+    </extended-runtime-options>
+  </server>
+  <import hidden-files="no">
+    <autoscan use-inotify="{{ autoscan_useinotify }}">
+      <directory location="{{ autoscan_directory }}" mode="inotify" recursive="yes" hidden-files="no"/>
+    </autoscan>
+    <scripting script-charset="UTF-8">
+      <playlist-script>/usr/share/gerbera/js/playlists.js</playlist-script>
+      <common-script>/usr/share/gerbera/js/common.js</common-script>
+      {% if navigation_type == "enhanced" %}
+      <virtual-layout type="js">
+        <import-script>/usr/share/gerbera/js/import_structured.js</import-script>
+      </virtual-layout>
+      {% elif navigation_type == "builtin" %}
+      <virtual-layout type="builtin">
+        <import-script>/usr/share/gerbera/js/import.js</import-script>
+      </virtual-layout>
+      {% elif navigation_type == "simple" %}
+      <virtual-layout type="js">
+        <import-script>/usr/share/gerbera/js/import.js</import-script>
+      </virtual-layout>
+      {% elif navigation_type == "custom" %}
+      <virtual-layout type="custom">
+        <import-script>/usr/share/gerbera/js/{{ navigation_custom_script }}</import-script>
+      </virtual-layout>
+      {% elif navigation_type == "off" %}
+      <virtual-layout type="disabled">
+        <import-script>/usr/share/gerbera/js/import.js</import-script>
+      </virtual-layout>
+      {% endif %}
+    </scripting>
+    <mappings>
+      <extension-mimetype ignore-unknown="no">
+        <map from="mp3" to="audio/mpeg"/>
+        <map from="ogx" to="application/ogg"/>
+        <map from="ogv" to="video/ogg"/>
+        <map from="oga" to="audio/ogg"/>
+        <map from="ogg" to="audio/ogg"/>
+        <map from="ogm" to="video/ogg"/>
+        <map from="asf" to="video/x-ms-asf"/>
+        <map from="asx" to="video/x-ms-asf"/>
+        <map from="wma" to="audio/x-ms-wma"/>
+        <map from="wax" to="audio/x-ms-wax"/>
+        <map from="wmv" to="video/x-ms-wmv"/>
+        <map from="wvx" to="video/x-ms-wvx"/>
+        <map from="wm" to="video/x-ms-wm"/>
+        <map from="wmx" to="video/x-ms-wmx"/>
+        <map from="m3u" to="audio/x-mpegurl"/>
+        <map from="pls" to="audio/x-scpls"/>
+        <map from="flv" to="video/x-flv"/>
+        <map from="mkv" to="video/x-matroska"/>
+        <map from="mka" to="audio/x-matroska"/>
+        {% if ps3_support %}
+        <!-- Uncomment the line below for PS3 divx support -->
+        <map from="avi" to="video/divx"/>
+        {% endif %}
+        {% if dsm_support %}
+        <!-- Uncomment the line below for D-Link DSM / ZyXEL DMA-1000 -->
+        <map from="avi" to="video/avi"/>
+        {% endif %}
+      </extension-mimetype>
+      <mimetype-upnpclass>
+        <map from="audio/*" to="object.item.audioItem.musicTrack"/>
+        <map from="video/*" to="object.item.videoItem"/>
+        <map from="image/*" to="object.item.imageItem"/>
+        <map from="application/ogg" to="object.item.audioItem.musicTrack"/>
+      </mimetype-upnpclass>
+      <mimetype-contenttype>
+        <treat mimetype="audio/mpeg" as="mp3"/>
+        <treat mimetype="application/ogg" as="ogg"/>
+        <treat mimetype="audio/ogg" as="ogg"/>
+        <treat mimetype="audio/x-flac" as="flac"/>
+        <treat mimetype="audio/x-ms-wma" as="wma"/>
+        <treat mimetype="audio/x-wavpack" as="wv"/>
+        <treat mimetype="image/jpeg" as="jpg"/>
+        <treat mimetype="audio/x-mpegurl" as="playlist"/>
+        <treat mimetype="audio/x-scpls" as="playlist"/>
+        <treat mimetype="audio/x-wav" as="pcm"/>
+        <treat mimetype="audio/L16" as="pcm"/>
+        <treat mimetype="video/x-msvideo" as="avi"/>
+        <treat mimetype="video/mp4" as="mp4"/>
+        <treat mimetype="audio/mp4" as="mp4"/>
+        <treat mimetype="video/x-matroska" as="mkv"/>
+        <treat mimetype="audio/x-matroska" as="mka"/>
+      </mimetype-contenttype>
+    </mappings>
+    <online-content>
+      <YouTube enabled="no" refresh="28800" update-at-start="no" purge-after="604800" racy-content="exclude" format="mp4" hd="no">
+        <favorites user="gerbera"/>
+        <standardfeed feed="most_viewed" time-range="today"/>
+        <playlists user="gerbera"/>
+        <uploads user="gerbera"/>
+        <standardfeed feed="recently_featured" time-range="today"/>
+      </YouTube>
+    </online-content>
+  </import>
+  <transcoding enabled="no">
+    <mimetype-profile-mappings>
+      <transcode mimetype="video/x-flv" using="vlcmpeg"/>
+      <transcode mimetype="application/ogg" using="vlcmpeg"/>
+      <transcode mimetype="application/ogg" using="oggflac2raw"/>
+      <transcode mimetype="audio/x-flac" using="oggflac2raw"/>
+    </mimetype-profile-mappings>
+    <profiles>
+      <profile name="oggflac2raw" enabled="no" type="external">
+        <mimetype>audio/L16</mimetype>
+        <accept-url>no</accept-url>
+        <first-resource>yes</first-resource>
+        <accept-ogg-theora>no</accept-ogg-theora>
+        <agent command="ogg123" arguments="-d raw -o byteorder:big -f %out %in"/>
+        <buffer size="1048576" chunk-size="131072" fill-size="262144"/>
+      </profile>
+      <profile name="vlcmpeg" enabled="no" type="external">
+        <mimetype>video/mpeg</mimetype>
+        <accept-url>yes</accept-url>
+        <first-resource>yes</first-resource>
+        <accept-ogg-theora>yes</accept-ogg-theora>
+        <agent command="vlc" arguments="-I dummy %in --sout #transcode{venc=ffmpeg,vcodec=mp2v,vb=4096,fps=25,aenc=ffmpeg,acodec=mpga,ab=192,samplerate=44100,channels=2}:standard{access=file,mux=ps,dst=%out} vlc:quit"/>
+        <buffer size="14400000" chunk-size="512000" fill-size="120000"/>
+      </profile>
+    </profiles>
+  </transcoding>
+</config>

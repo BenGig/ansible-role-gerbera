@@ -1,0 +1,38 @@
+---
+uuid: deb6bdc2-ac9f-4ada-bc61-ce9f4628b35a  # unique for every instance!
+gerbera_port: 49153                         # or higher
+ui_enabled: 'yes'                           # activate web UI ('yes'|'no')
+accounts_enabled: true                      # restrict access
+gerbera_user: gerbera                       # UI login password; also set gerbera_password
+gerbera_home: /var/lib/gerbera              # unique per instance
+gerbera_webroot: /usr/share/gerbera/web     # may be shared
+upnp_library_name: Gerbera Library          # friendly name, displayed in clients
+
+# virtual directory structure
+navigation_type: enhanced                   # options: builtin, simple, custom, disabled
+navigation_custom_script: ""                # add "your_script.js" if type is custom
+
+# filesystem directory scan
+autoscan_useinotify: auto
+autoscan_directory: /audio                  # more can be managed in the UI
+
+# external database
+mysql_host: ""                              # empty for local sqlite3 database
+mysql_user: gerbera                         # also set mysql_password
+mysql_database: gerbera                     # database name
+
+# thumbnail generation
+ffmpegthumbnailer: false
+ffmpegthumbnailer_size: 128
+ffmpegthumbnailer_seekpercentage: 5
+ffmpegthumbnailer_filmstripoverlay: 'yes'
+ffmpegthumbnailer_workaround: 'no'
+
+# mark played movies
+markplayed: 'no'                            # ('yes'|'no')
+markplayed_prepend: '*'
+
+# devices support, adds some hacks
+ps3_support: false
+dsm_support: false
+tg100_support: false

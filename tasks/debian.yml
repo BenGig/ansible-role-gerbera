@@ -1,0 +1,9 @@
+---
+- name: Install Gerbera UPnP server for Debian
+  apt:
+    name: "{{ item }}"
+  with_items:
+      - python-lxml
+      - gerbera
+  state: present
+  cache_valid_time: 3600
