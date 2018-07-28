@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: gerbera
   author: Bengt Giger
   description: Configuration module for the Gerbera UPnP server
   # company: your company (optional)
